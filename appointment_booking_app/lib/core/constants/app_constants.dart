@@ -16,6 +16,7 @@ class AppConstants {
   // Currency
   static const String currency = 'PKR';
 
-  // Backend Base URL
-  static const String defaultBackendUrl = 'http://localhost:5000/api';
+  // Backend Base URL & Security
+  static const String defaultBackendUrl = 'https://appointment-booking-app-seven.vercel.app/api';
+  static const String appSecretToken = 'salon_sec_9a87d6f5e4c3b2a1';
 }

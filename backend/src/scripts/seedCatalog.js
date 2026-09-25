@@ -27,17 +27,17 @@ const SERVICES = [
 
 const STAFF = [
   {
-    id: 'staff_alex_carter',
-    name: 'Alex Carter',
+    id: 'staff_hamza_khan',
+    name: 'Hamza Khan',
     role: 'Master Stylist & Barber',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
     active: true
   },
   {
-    id: 'staff_maya_lin',
-    name: 'Maya Lin',
+    id: 'staff_ayesha_malik',
+    name: 'Ayesha Malik',
     role: 'Senior Hair & Skin Specialist',
-    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150',
     active: true
   }
 ];
@@ -125,7 +125,10 @@ async function seed() {
   await servicesBatch.commit();
   console.log(`✓ Seeded ${SERVICES.length} services.`);
 
-  // 2. Seed Staff
+  // 2. Seed Staff (and cleanup previous)
+  await db.collection('staff').doc('staff_alex_carter').delete().catch(() => {});
+  await db.collection('staff').doc('staff_maya_lin').delete().catch(() => {});
+
   const staffBatch = db.batch();
   for (const st of STAFF) {
     const docRef = db.collection('staff').doc(st.id);
@@ -135,7 +138,7 @@ async function seed() {
     });
   }
   await staffBatch.commit();
-  console.log(`✓ Seeded ${STAFF.length} staff members.`);
+  console.log(`✓ Seeded ${STAFF.length} staff members (${STAFF.map(s => s.name).join(', ')}).`);
 
   // 3. Seed Slots
   const slots = generateSlotsForStaff(STAFF, 14);

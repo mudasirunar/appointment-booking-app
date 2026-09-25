@@ -133,15 +133,15 @@ Public read-only service catalog.
 
 ### `staff/{staffId}`
 Public read-only staff catalog.
-- `id` (string): Unique identifier (e.g., `staff_alex_carter`).
-- `name` (string): Full name.
+- `id` (string): Unique identifier (e.g., `staff_hamza_khan`).
+- `name` (string): Full name (e.g., `Hamza Khan`, `Ayesha Malik`).
 - `role` (string): Staff title / specialty.
 - `avatarUrl` (string): Profile image URL.
 - `active` (boolean): Availability toggle.
 
 ### `slots/{slotId}`
 Public real-time availability tracking. **Contains zero customer PII** (no names, emails, or phone numbers).
-- **Canonical ID:** `${staffId}_${startAtUtcIso}` (e.g. `staff_alex_2026-09-26T05:00:00.000Z`).
+- **Canonical ID:** `${staffId}_${startAtUtcIso}` (e.g. `staff_hamza_khan_2026-09-26T05:00:00.000Z`).
 - `staffId` (string): Reference to staff member.
 - `staffName` (string): Staff display name snapshot.
 - `startAt` (timestamp): UTC start timestamp.
@@ -237,7 +237,7 @@ npm run seed
 
 This script:
 1. Populates 3 predefined salon services (Haircut & Styling, Beard Grooming & Shape, Express Revitalizing Facial) at 30 minutes duration.
-2. Populates 2 salon staff members (Alex Carter, Maya Lin).
+2. Populates 2 salon staff members (Hamza Khan, Ayesha Malik).
 3. Generates 30-minute availability slots across the next 14 calendar days (today through next 13 days) between 10:00 and 18:00 PKT (excluding Sundays and past slots).
 
 ---
