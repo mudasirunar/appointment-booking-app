@@ -7,6 +7,7 @@ import '../../core/utils/timezone_util.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/app_network_image.dart';
 import '../../core/widgets/app_snackbar.dart';
+import '../../core/widgets/app_dialog.dart';
 import '../../models/service_model.dart';
 import '../../models/staff_model.dart';
 import '../../models/slot_model.dart';
@@ -86,89 +87,37 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
   }
 
   void _showConflictDialog() {
-    final isDark = AppTheme.isDark(context);
-
-    showModalBottomSheet(
+    AppDialog.show(
       context: context,
-      isDismissible: false,
-      enableDrag: false,
-      backgroundColor: isDark ? AppTheme.cardBackgroundDark : Colors.white,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.red.withValues(alpha: 0.12),
-                ),
-                child: const Icon(
-                  Icons.event_busy_rounded,
-                  color: Colors.redAccent,
-                  size: 34,
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                'Slot No Longer Available',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textPrimaryOf(context),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'Another client just confirmed this time slot at ${TimezoneUtil.formatTimeOnly(widget.slot.startAt)}. Please select another available slot.',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  height: 1.4,
-                  color: AppTheme.textSecondaryOf(context),
-                ),
-              ),
-              const SizedBox(height: 24),
-              CustomButton(
-                width: double.infinity,
-                text: 'Select Another Time',
-                onPressed: () {
-                  Navigator.pop(ctx); // Close sheet
-                  Navigator.pop(context); // Return to slot grid
-                },
-              ),
-            ],
-          ),
-        );
+      barrierDismissible: false,
+      icon: Icons.event_busy_rounded,
+      isDestructive: true,
+      title: 'Slot No Longer Available',
+      description:
+          'Another client just confirmed this time slot at ${TimezoneUtil.formatTimeOnly(widget.slot.startAt)}. Please select another available slot.',
+      showCancel: false,
+      confirmText: 'Select Another Time',
+      onConfirm: () {
+        Navigator.pop(context); // Close dialog
+        Navigator.pop(context); // Return to slot grid
       },
     );
   }
 
   void _showPastSlotDialog() {
-    showDialog(
+    AppDialog.show(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Slot Has Passed'),
-        content: const Text(
+      barrierDismissible: false,
+      icon: Icons.history_rounded,
+      title: 'Slot Has Passed',
+      description:
           'This appointment time has already elapsed. Please pick an upcoming available slot.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pop(context);
-            },
-            child: const Text('OK'),
-          ),
-        ],
-      ),
+      showCancel: false,
+      confirmText: 'Pick Another Time',
+      onConfirm: () {
+        Navigator.pop(context); // Close dialog
+        Navigator.pop(context); // Return to slot selection
+      },
     );
   }
 

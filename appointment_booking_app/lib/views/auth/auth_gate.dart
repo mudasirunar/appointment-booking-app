@@ -4,7 +4,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../core/theme/app_theme.dart';
 import 'login_screen.dart';
-import '../catalog/services_screen.dart';
+import '../navigation/main_navigation_shell.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -30,7 +30,7 @@ class AuthGate extends StatelessWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         bookingProvider.bindUser(authProvider.uid!);
       });
-      return const ServicesScreen();
+      return MainNavigationShell();
     }
 
     // Immediately clear booking cache and listeners on sign out

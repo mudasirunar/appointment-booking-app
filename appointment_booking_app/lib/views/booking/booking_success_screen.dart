@@ -8,6 +8,7 @@ import '../../core/widgets/app_network_image.dart';
 import '../../core/widgets/app_snackbar.dart';
 import '../../models/booking_model.dart';
 import '../../models/staff_model.dart';
+import '../navigation/main_navigation_shell.dart';
 
 class BookingSuccessScreen extends StatefulWidget {
   final BookingModel booking;
@@ -52,6 +53,26 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
     });
   }
 
+  void _navigateToTab(BuildContext context, int tabIndex) {
+    Navigator.of(context).pushAndRemoveUntil(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            MainNavigationShell(initialIndex: tabIndex),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: CurvedAnimation(
+              parent: animation,
+              curve: Curves.easeInOut,
+            ),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 250),
+      ),
+      (route) => false,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
@@ -60,8 +81,14 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: AppTheme.systemOverlayStyleOf(context),
-      child: Scaffold(
-        body: SafeArea(
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+          _navigateToTab(context, 1);
+        },
+        child: Scaffold(
+          body: SafeArea(
           bottom: false,
           child: Column(
             children: [
@@ -397,19 +424,34 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
                     ),
                   ],
                 ),
-                child: CustomButton(
-                  width: double.infinity,
-                  text: 'Back to Salon Services',
-                  icon: Icons.check_circle_outline_rounded,
-                  onPressed: () {
-                    // Pop all the way back to root catalog screen
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomButton(
+                      width: double.infinity,
+                      text: 'View in My Bookings',
+                      icon: Icons.calendar_month_rounded,
+                      onPressed: () => _navigateToTab(context, 1),
+                    ),
+                    const SizedBox(height: 6),
+                    TextButton(
+                      onPressed: () => _navigateToTab(context, 0),
+                      child: Text(
+                        'Back to Salon Services',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textSecondaryOf(context),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
           ),
         ),
+      ),
       ),
     );
   }

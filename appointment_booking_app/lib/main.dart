@@ -7,6 +7,7 @@ import 'core/constants/app_constants.dart';
 import 'providers/auth_provider.dart';
 import 'providers/availability_provider.dart';
 import 'providers/booking_provider.dart';
+import 'providers/theme_provider.dart';
 import 'views/auth/auth_gate.dart';
 
 import 'package:flutter/services.dart';
@@ -37,17 +38,22 @@ class AppointmentBookingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AvailabilityProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
       ],
-      child: MaterialApp(
-        title: AppConstants.appName,
-        debugShowCheckedModeBanner: false,
-        themeMode: ThemeMode.system,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        home: const AuthGate(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: AppConstants.appName,
+            debugShowCheckedModeBanner: false,
+            themeMode: themeProvider.themeMode,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            home: const AuthGate(),
+          );
+        },
       ),
     );
   }

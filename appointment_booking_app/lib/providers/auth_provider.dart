@@ -192,6 +192,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Update User Display Name
+  Future<bool> updateDisplayName(String newName) async {
+    try {
+      if (_user != null) {
+        await _user!.updateDisplayName(newName.trim());
+        await _user!.reload();
+        _user = FirebaseAuth.instance.currentUser;
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Failed to update display name: $e');
+      return false;
+    }
+  }
+
   @override
   void dispose() {
     _authSubscription?.cancel();

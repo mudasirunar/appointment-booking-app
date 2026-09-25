@@ -13,7 +13,9 @@ import '../../providers/availability_provider.dart';
 import 'staff_availability_screen.dart';
 
 class ServicesScreen extends StatelessWidget {
-  const ServicesScreen({super.key});
+  final VoidCallback? onNavigateToBookings;
+
+  const ServicesScreen({super.key, this.onNavigateToBookings});
 
   String _getGreeting() {
     final nowPkt = TimezoneUtil.nowInPkt();
@@ -23,53 +25,7 @@ class ServicesScreen extends StatelessWidget {
     return 'Good evening';
   }
 
-  void _confirmSignOut(BuildContext context, AuthProvider authProvider) {
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
-          backgroundColor: AppTheme.surfaceOf(ctx),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          title: Text(
-            'Sign Out',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimaryOf(ctx),
-            ),
-          ),
-          content: Text(
-            'Are you sure you want to sign out of your account?',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppTheme.textSecondaryOf(ctx),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: AppTheme.textSecondaryOf(ctx)),
-              ),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
-              onPressed: () async {
-                Navigator.pop(ctx);
-                await authProvider.signOut();
-              },
-              child: const Text('Sign Out'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -156,20 +112,38 @@ class ServicesScreen extends StatelessWidget {
                               ],
                             ),
 
-                            // Header Action Buttons
-                            Row(
-                              children: [
-                                IconButton(
-                                  tooltip: 'Sign Out',
-                                  icon: Icon(
-                                    Icons.logout_rounded,
-                                    size: 22,
-                                    color: AppTheme.textSecondaryOf(context),
+                            if (onNavigateToBookings != null)
+                              InkWell(
+                                onTap: onNavigateToBookings,
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: isDark ? AppTheme.cardBackgroundDark : Colors.white,
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(color: AppTheme.borderOf(context)),
                                   ),
-                                  onPressed: () => _confirmSignOut(context, authProvider),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.calendar_month_rounded,
+                                        size: 14,
+                                        color: AppTheme.primaryAccent,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        'Bookings',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          color: AppTheme.textPrimaryOf(context),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ],
-                            ),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 22),
@@ -258,7 +232,7 @@ class ServicesScreen extends StatelessWidget {
                 _buildCatalogBody(context, availability, isDark),
                 const SliverToBoxAdapter(
                   child: SizedBox(
-                    height: 24,
+                    height: 110,
                   ),
                 ),
               ],
