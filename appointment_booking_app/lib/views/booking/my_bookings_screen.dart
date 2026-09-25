@@ -94,7 +94,10 @@ class MyBookingsScreenState extends State<MyBookingsScreen> {
   void _confirmCancelBooking(BuildContext context, BookingModel booking) {
     // Safety check: is appointment still in the future?
     if (TimezoneUtil.isPastSlot(booking.startAt)) {
-      AppSnackBar.showError(context, 'Cannot cancel an appointment that has already elapsed.');
+      AppSnackBar.showError(
+        context,
+        'Cannot cancel an appointment that has already elapsed.',
+      );
       return;
     }
 
@@ -110,29 +113,35 @@ class MyBookingsScreenState extends State<MyBookingsScreen> {
           'Are you sure you want to cancel your ${booking.serviceName} session on ${TimezoneUtil.formatDate(booking.startAt)} at ${TimezoneUtil.formatTimeOnly(booking.startAt)} with ${booking.staffName}?\n\nThe slot will be released back to the salon schedule immediately.',
       cancelText: 'Keep',
       confirmText: 'Cancel',
-      onConfirm: () async {
-        Navigator.pop(context);
+      barrierDismissible: false,
+      onConfirmAsync: () async {
         final user = auth.user;
         if (user == null) return;
 
-              final success = await bookingProvider.cancelBooking(
-                uid: user.uid,
-                booking: booking,
-              );
+        final success = await bookingProvider.cancelBooking(
+          uid: user.uid,
+          booking: booking,
+        );
 
-              if (!mounted) return;
-              if (success) {
-                AppSnackBar.showSuccess(
-                  this.context,
-                  'Appointment cancelled. Slot has been released.',
-                );
-              } else {
-                AppSnackBar.showError(
-                  this.context,
-                  bookingProvider.errorMessage ?? 'Failed to cancel appointment.',
-                );
-              }
-            },
+        if (!mounted) return;
+
+        if (success) {
+          // Dismiss confirmation dialog now that cancellation is confirmed
+          Navigator.of(this.context).pop();
+
+          // Red colored snackbar
+          AppSnackBar.showError(
+            this.context,
+            'Appointment cancelled. Slot has been released.',
+          );
+        } else {
+          // Keep dialog open and inform user of error
+          AppSnackBar.showError(
+            this.context,
+            bookingProvider.errorMessage ?? 'Failed to cancel appointment.',
+          );
+        }
+      },
     );
   }
 
