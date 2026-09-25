@@ -107,7 +107,11 @@ class AuthProvider extends ChangeNotifier {
 
   /// Sign Out (Strict Account Isolation)
   Future<void> signOut() async {
-    await _authService.signOut();
+    try {
+      await _authService.signOut();
+    } catch (e) {
+      debugPrint('SignOut exception: $e');
+    }
     _user = null;
     _status = AuthStatus.unauthenticated;
     _resetEmail = null;

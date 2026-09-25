@@ -12,6 +12,7 @@ import '../../models/booking_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../auth/auth_gate.dart';
 
 class ProfileScreen extends StatelessWidget {
   final ScrollController? scrollController;
@@ -143,12 +144,35 @@ class ProfileScreen extends StatelessWidget {
       icon: Icons.logout_rounded,
       isDestructive: true,
       title: 'Sign Out',
-      description: 'Are you sure you want to sign out of your Salon Luxe account?',
+      description:
+          'Are you sure you want to sign out of your Salon Luxe account?',
       cancelText: 'Cancel',
       confirmText: 'Sign Out',
-      onConfirm: () {
-        Navigator.pop(context);
-        auth.signOut();
+      barrierDismissible: false,
+      onConfirmAsync: () async {
+        // 1. Immediately tear down booking listeners and purge bookings from memory
+        context.read<BookingProvider>().unbindUser();
+
+        // 2. Perform Firebase Auth Sign Out
+        try {
+          await auth.signOut();
+        } catch (e) {
+          if (context.mounted) {
+            AppSnackBar.showError(
+              context,
+              'Failed to sign out. Please check connection and try again.',
+            );
+          }
+          return;
+        }
+
+        // 3. Reset entire navigation stack back to AuthGate to strictly show LoginScreen
+        if (context.mounted) {
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const AuthGate()),
+            (route) => false,
+          );
+        }
       },
     );
   }

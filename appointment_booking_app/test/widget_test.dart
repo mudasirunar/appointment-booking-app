@@ -243,6 +243,40 @@ void main() {
       expect(find.text('Sign Out Test'), findsNothing);
     });
 
+    testWidgets('AppDialog shows loader on confirm button and disables actions while loading', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () {
+                  AppDialog.show(
+                    context: context,
+                    icon: Icons.logout_rounded,
+                    title: 'Async Loading Test',
+                    description: 'Testing async loading behavior.',
+                    cancelText: 'Cancel',
+                    confirmText: 'Sign Out',
+                    isLoading: true,
+                  );
+                },
+                child: const Text('Open Async Dialog'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open Async Dialog'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 300));
+
+      expect(find.text('Async Loading Test'), findsOneWidget);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text('Sign Out'), findsNothing);
+      expect(find.text('Cancel'), findsOneWidget);
+    });
+
     testWidgets('FluidSegmentedPill handles fluid drag and commits selection only on placement', (tester) async {
       int selected = 0;
 

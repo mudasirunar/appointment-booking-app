@@ -7,7 +7,9 @@ import 'login_screen.dart';
 import '../navigation/main_navigation_shell.dart';
 
 class AuthGate extends StatelessWidget {
-  const AuthGate({super.key});
+  final int initialIndex;
+
+  const AuthGate({super.key, this.initialIndex = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class AuthGate extends StatelessWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         bookingProvider.bindUser(authProvider.uid!);
       });
-      return MainNavigationShell();
+      return MainNavigationShell(initialIndex: initialIndex);
     }
 
     // Immediately clear booking cache and listeners on sign out

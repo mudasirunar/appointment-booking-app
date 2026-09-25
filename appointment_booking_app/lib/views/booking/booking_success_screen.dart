@@ -8,7 +8,7 @@ import '../../core/widgets/app_network_image.dart';
 import '../../core/widgets/app_snackbar.dart';
 import '../../models/booking_model.dart';
 import '../../models/staff_model.dart';
-import '../navigation/main_navigation_shell.dart';
+import '../auth/auth_gate.dart';
 
 class BookingSuccessScreen extends StatefulWidget {
   final BookingModel booking;
@@ -57,17 +57,9 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
     Navigator.of(context).pushAndRemoveUntil(
       PageRouteBuilder(
         pageBuilder: (context, animation, secondaryAnimation) =>
-            MainNavigationShell(initialIndex: tabIndex),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(
-            opacity: CurvedAnimation(
-              parent: animation,
-              curve: Curves.easeInOut,
-            ),
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 250),
+            AuthGate(initialIndex: tabIndex),
+        transitionDuration: Duration.zero,
+        reverseTransitionDuration: Duration.zero,
       ),
       (route) => false,
     );
