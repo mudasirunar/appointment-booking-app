@@ -191,7 +191,7 @@ class _FluidSegmentedPillState extends State<FluidSegmentedPill>
     final count = widget.items.length;
     if (count <= 1) return;
 
-    final innerWidth = _containerWidth - 8; // 4px padding on each side
+    final innerWidth = _containerWidth - 8;
     final itemWidth = innerWidth / count;
     final adjustedX = localX - 4;
     final rawPos = (adjustedX - (itemWidth / 2)) / itemWidth;

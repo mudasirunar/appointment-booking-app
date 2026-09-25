@@ -332,12 +332,14 @@ void main() {
                     Expanded(
                       child: NotificationListener<ScrollNotification>(
                         onNotification: (notification) {
-                          if (notification is ScrollStartNotification) {
-                            if (notification.dragDetails != null) {
-                              isDraggingNotifier.value = true;
+                          if (notification.metrics.axis == Axis.horizontal) {
+                            if (notification is ScrollStartNotification) {
+                              if (notification.dragDetails != null) {
+                                isDraggingNotifier.value = true;
+                              }
+                            } else if (notification is ScrollEndNotification) {
+                              isDraggingNotifier.value = false;
                             }
-                          } else if (notification is ScrollEndNotification) {
-                            isDraggingNotifier.value = false;
                           }
                           return false;
                         },

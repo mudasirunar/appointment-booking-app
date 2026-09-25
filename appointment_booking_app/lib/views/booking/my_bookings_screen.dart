@@ -249,12 +249,14 @@ class MyBookingsScreenState extends State<MyBookingsScreen> {
               Expanded(
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
-                    if (notification is ScrollStartNotification) {
-                      if (notification.dragDetails != null) {
-                        _isPageDraggingNotifier.value = true;
+                    if (notification.metrics.axis == Axis.horizontal) {
+                      if (notification is ScrollStartNotification) {
+                        if (notification.dragDetails != null) {
+                          _isPageDraggingNotifier.value = true;
+                        }
+                      } else if (notification is ScrollEndNotification) {
+                        _isPageDraggingNotifier.value = false;
                       }
-                    } else if (notification is ScrollEndNotification) {
-                      _isPageDraggingNotifier.value = false;
                     }
                     return false;
                   },
