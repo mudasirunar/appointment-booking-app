@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/widgets/app_snackbar.dart';
@@ -54,20 +55,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
 
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        leading: _isSuccess
-            ? null
-            : IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-                onPressed: () => Navigator.pop(context),
-              ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: _isSuccess ? _buildSuccessView() : _buildFormView(authProvider),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: AppTheme.systemOverlayStyleOf(context),
+      child: Scaffold(
+        appBar: AppBar(
+          leading: _isSuccess
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                  onPressed: () => Navigator.pop(context),
+                ),
+        ),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: _isSuccess ? _buildSuccessView() : _buildFormView(authProvider),
+          ),
         ),
       ),
     );
@@ -84,34 +87,34 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppTheme.surfaceBackground,
+                color: AppTheme.surfaceOf(context),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.borderSubtle),
+                border: Border.all(color: AppTheme.borderOf(context)),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.lock_reset_rounded,
                 size: 28,
-                color: AppTheme.primary,
+                color: AppTheme.accentOf(context),
               ),
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'Set New Password',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w700,
-              color: AppTheme.textPrimary,
+              color: AppTheme.textPrimaryOf(context),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Enter a strong new password for your account.',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
-              color: AppTheme.textSecondary,
+              color: AppTheme.textSecondaryOf(context),
             ),
           ),
           const SizedBox(height: 32),
@@ -185,22 +188,22 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           ),
         ),
         const SizedBox(height: 24),
-        const Text(
+        Text(
           'Password Updated!',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w700,
-            color: AppTheme.textPrimary,
+            color: AppTheme.textPrimaryOf(context),
           ),
         ),
         const SizedBox(height: 12),
-        const Text(
+        Text(
           'Your password has been reset successfully. You can now log in with your new credentials.',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 14,
-            color: AppTheme.textSecondary,
+            color: AppTheme.textSecondaryOf(context),
             height: 1.5,
           ),
         ),

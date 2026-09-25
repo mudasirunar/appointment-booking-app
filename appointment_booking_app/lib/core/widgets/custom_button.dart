@@ -25,7 +25,13 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveTextColor = textColor ?? (isOutlined ? AppTheme.textPrimary : Colors.white);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    const defaultBgColor = AppTheme.primaryAccent;
+    final effectiveBgColor = backgroundColor ?? defaultBgColor;
+    final effectiveTextColor = textColor ??
+        (isOutlined
+            ? (isDark ? AppTheme.textPrimaryDark : AppTheme.textPrimary)
+            : (isDark ? Colors.black : Colors.white));
     final isInteractive = !isLoading && onPressed != null;
 
     final child = isLoading
@@ -61,7 +67,9 @@ class CustomButton extends StatelessWidget {
             onPressed: isInteractive ? onPressed : null,
             style: OutlinedButton.styleFrom(
               side: BorderSide(
-                color: isInteractive ? (backgroundColor ?? AppTheme.borderSubtle) : AppTheme.borderSubtle,
+                color: isInteractive
+                    ? (backgroundColor ?? (isDark ? AppTheme.borderSubtleDark : AppTheme.borderSubtle))
+                    : (isDark ? AppTheme.borderSubtleDark : AppTheme.borderSubtle),
                 width: 1.2,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
@@ -74,8 +82,8 @@ class CustomButton extends StatelessWidget {
         : ElevatedButton(
             onPressed: isInteractive ? onPressed : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: backgroundColor ?? AppTheme.primary,
-              disabledBackgroundColor: AppTheme.primary.withValues(alpha: 0.5),
+              backgroundColor: effectiveBgColor,
+              disabledBackgroundColor: effectiveBgColor.withValues(alpha: 0.5),
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               shape: RoundedRectangleBorder(

@@ -86,10 +86,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
       children: [
         Text(
           widget.label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
-            color: AppTheme.textPrimary,
+            color: AppTheme.textPrimaryOf(context),
           ),
         ),
         const SizedBox(height: 6),
@@ -125,14 +125,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       FocusScope.of(context).unfocus();
                     }
                   },
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
-                color: AppTheme.textPrimary,
+                color: AppTheme.textPrimaryOf(context),
               ),
               decoration: InputDecoration(
                 hintText: widget.hintText,
                 prefixIcon: widget.prefixIcon != null
-                    ? Icon(widget.prefixIcon, size: 20, color: AppTheme.textSecondary)
+                    ? Icon(widget.prefixIcon, size: 20, color: AppTheme.textSecondaryOf(context))
                     : null,
                 suffixIcon: widget.suffixIcon,
                 errorText: _displayedError,

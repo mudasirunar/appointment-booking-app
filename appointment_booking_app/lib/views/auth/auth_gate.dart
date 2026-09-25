@@ -15,11 +15,10 @@ class AuthGate extends StatelessWidget {
     final bookingProvider = context.read<BookingProvider>();
 
     if (authProvider.status == AuthStatus.uninitialized) {
-      return const Scaffold(
-        backgroundColor: Colors.white,
+      return Scaffold(
         body: Center(
           child: CircularProgressIndicator(
-            color: AppTheme.primary,
+            color: AppTheme.accentOf(context),
             strokeWidth: 2.5,
           ),
         ),

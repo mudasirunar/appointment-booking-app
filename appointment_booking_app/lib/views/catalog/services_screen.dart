@@ -23,10 +23,10 @@ class ServicesScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: const Center(
+      body: Center(
         child: Text(
           'Services Catalog Screen',
-          style: TextStyle(fontSize: 16, color: AppTheme.textPrimary),
+          style: TextStyle(fontSize: 16, color: AppTheme.textPrimaryOf(context)),
         ),
       ),
     );

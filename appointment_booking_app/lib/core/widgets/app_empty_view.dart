@@ -29,29 +29,29 @@ class AppEmptyView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppTheme.surfaceBackground,
+                color: AppTheme.surfaceOf(context),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppTheme.borderSubtle),
+                border: Border.all(color: AppTheme.borderOf(context)),
               ),
-              child: Icon(icon, size: 40, color: AppTheme.textSecondary),
+              child: Icon(icon, size: 40, color: AppTheme.textSecondaryOf(context)),
             ),
             const SizedBox(height: 20),
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
-                color: AppTheme.textPrimary,
+                color: AppTheme.textPrimaryOf(context),
               ),
             ),
             const SizedBox(height: 8),
             Text(
               message,
               textAlign: TextAlign.center,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
-                color: AppTheme.textSecondary,
+                color: AppTheme.textSecondaryOf(context),
                 height: 1.4,
               ),
             ),
