@@ -12,6 +12,7 @@ import '../../models/service_model.dart';
 import '../../models/staff_model.dart';
 import '../../models/slot_model.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/availability_provider.dart';
 import '../../providers/booking_provider.dart';
 import '../../services/booking_service.dart';
 import 'booking_success_screen.dart';
@@ -61,6 +62,9 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
       );
 
       if (booking != null && mounted) {
+        // Clear slot selection so future appointment bookings start completely fresh
+        context.read<AvailabilityProvider>().clearSelection();
+
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

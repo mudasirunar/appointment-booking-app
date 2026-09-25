@@ -29,7 +29,9 @@ class _StaffAvailabilityScreenState extends State<StaffAvailabilityScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
       final provider = context.read<AvailabilityProvider>();
+      provider.clearSelection();
       provider.selectService(widget.service);
     });
   }
@@ -788,7 +790,10 @@ class _StaffAvailabilityScreenState extends State<StaffAvailabilityScreen> {
     StaffModel? selectedStaff,
     bool isDark,
   ) {
-    final hasSelection = selectedSlot != null && selectedStaff != null;
+    final isSlotValid = selectedSlot != null &&
+        !selectedSlot.isReserved &&
+        !selectedSlot.isPast;
+    final hasSelection = isSlotValid && selectedStaff != null;
 
     return Container(
       width: double.infinity,

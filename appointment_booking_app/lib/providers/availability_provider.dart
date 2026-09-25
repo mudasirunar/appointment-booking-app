@@ -49,7 +49,14 @@ class AvailabilityProvider extends ChangeNotifier {
   ServiceModel? get selectedService => _selectedService;
   StaffModel? get selectedStaff => _selectedStaff;
   DateTime get selectedDate => _selectedDate;
-  SlotModel? get selectedSlot => _selectedSlot;
+  SlotModel? get selectedSlot {
+    if (_selectedSlot == null) return null;
+    if (_selectedSlot!.isReserved || _selectedSlot!.isPast) {
+      _selectedSlot = null;
+      return null;
+    }
+    return _selectedSlot;
+  }
 
   bool get isLoading => _isLoadingServices || _isLoadingStaff || _isLoadingSlots;
   bool get isLoadingServices => _isLoadingServices;
@@ -120,6 +127,15 @@ class AvailabilityProvider extends ChangeNotifier {
     _slotsSub = _bookingService.streamSlots().listen(
       (slots) {
         _allSlots = slots;
+        if (_selectedSlot != null) {
+          final updatedSlot =
+              slots.where((s) => s.id == _selectedSlot!.id).firstOrNull;
+          if (updatedSlot == null || updatedSlot.isReserved || updatedSlot.isPast) {
+            _selectedSlot = null;
+          } else {
+            _selectedSlot = updatedSlot;
+          }
+        }
         _isLoadingSlots = false;
         notifyListeners();
       },
@@ -132,8 +148,11 @@ class AvailabilityProvider extends ChangeNotifier {
   }
 
   void selectService(ServiceModel service) {
-    _selectedService = service;
-    notifyListeners();
+    if (_selectedService?.id != service.id) {
+      _selectedService = service;
+      _selectedSlot = null; // Invalidate slot when switching service
+      notifyListeners();
+    }
   }
 
   void selectStaff(StaffModel staff) {
