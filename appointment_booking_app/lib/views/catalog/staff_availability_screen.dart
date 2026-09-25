@@ -5,12 +5,12 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/timezone_util.dart';
 import '../../core/widgets/app_network_image.dart';
-import '../../core/widgets/app_snackbar.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../models/service_model.dart';
 import '../../models/slot_model.dart';
 import '../../models/staff_model.dart';
 import '../../providers/availability_provider.dart';
+import '../booking/booking_review_screen.dart';
 
 class StaffAvailabilityScreen extends StatefulWidget {
   final ServiceModel service;
@@ -841,10 +841,15 @@ class _StaffAvailabilityScreenState extends State<StaffAvailabilityScreen> {
                 : 'Select a Slot to Continue',
             onPressed: hasSelection
                 ? () {
-                    // Feedback & navigation to Phase 6 booking review
-                    AppSnackBar.showSuccess(
+                    Navigator.push(
                       context,
-                      'Slot reserved: ${TimezoneUtil.formatFullDateTime(selectedSlot.startAt)}',
+                      MaterialPageRoute(
+                        builder: (_) => BookingReviewScreen(
+                          service: widget.service,
+                          staff: selectedStaff,
+                          slot: selectedSlot,
+                        ),
+                      ),
                     );
                   }
                 : null,

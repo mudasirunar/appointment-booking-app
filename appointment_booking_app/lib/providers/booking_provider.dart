@@ -109,6 +109,7 @@ class BookingProvider extends ChangeNotifier {
     required SlotModel slot,
     required ServiceModel service,
     required StaffModel staff,
+    String? notes,
   }) async {
     if (_isSubmitting) return null; // Double-tap protection
     _isSubmitting = true;
@@ -124,6 +125,7 @@ class BookingProvider extends ChangeNotifier {
         slot: slot,
         service: service,
         staff: staff,
+        notes: notes,
       );
 
       _isSubmitting = false;

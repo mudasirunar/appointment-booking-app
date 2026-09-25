@@ -16,6 +16,7 @@ class BookingModel {
   final BookingStatus status;
   final DateTime createdAt;
   final DateTime? cancelledAt;
+  final String? notes;
 
   const BookingModel({
     required this.bookingId,
@@ -30,6 +31,7 @@ class BookingModel {
     required this.status,
     required this.createdAt,
     this.cancelledAt,
+    this.notes,
   });
 
   factory BookingModel.fromFirestore(DocumentSnapshot doc) {
@@ -74,6 +76,7 @@ class BookingModel {
       status: computedStatus,
       createdAt: parseTimestamp(data['createdAt']),
       cancelledAt: parseNullableTimestamp(data['cancelledAt']),
+      notes: data['notes'] as String?,
     );
   }
 
@@ -91,6 +94,7 @@ class BookingModel {
       'status': status.name,
       'createdAt': createdAt.toUtc(),
       'cancelledAt': cancelledAt?.toUtc(),
+      'notes': notes,
     };
   }
 

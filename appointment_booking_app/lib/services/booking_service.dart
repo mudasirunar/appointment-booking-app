@@ -73,6 +73,7 @@ class BookingService {
     required SlotModel slot,
     required ServiceModel service,
     required StaffModel staff,
+    String? notes,
   }) async {
     final slotRef = _firestore.collection('slots').doc(slot.id);
     final bookingRef = _firestore.collection('users').doc(uid).collection('bookings').doc(bookingId);
@@ -132,6 +133,7 @@ class BookingService {
         'status': 'upcoming',
         'createdAt': FieldValue.serverTimestamp(),
         'cancelledAt': null,
+        'notes': notes?.trim().isNotEmpty == true ? notes!.trim() : null,
       };
 
       transaction.set(bookingRef, newBookingData);
@@ -148,6 +150,7 @@ class BookingService {
         endAt: slot.endAt,
         status: BookingStatus.upcoming,
         createdAt: DateTime.now(),
+        notes: notes?.trim().isNotEmpty == true ? notes!.trim() : null,
       );
     });
   }

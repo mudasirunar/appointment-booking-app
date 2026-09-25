@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:appointment_booking_app/core/utils/timezone_util.dart';
 import 'package:appointment_booking_app/models/service_model.dart';
 import 'package:appointment_booking_app/models/slot_model.dart';
+import 'package:appointment_booking_app/models/booking_model.dart';
+import 'package:appointment_booking_app/services/booking_service.dart';
 
 void main() {
   group('Timezone & Domain Tests (Asia/Karachi PKT UTC+5)', () {
@@ -58,6 +60,44 @@ void main() {
 
       expect(slot.isPast, isFalse);
       expect(slot.formattedTime.contains(TimezoneUtil.timezoneLabel), isTrue);
+    });
+
+    test('BookingModel serialization and formatted values', () {
+      final now = DateTime.now().toUtc();
+      final start = now.add(const Duration(days: 1));
+      final end = start.add(const Duration(minutes: 30));
+
+      final booking = BookingModel(
+        bookingId: 'BK-TEST01',
+        slotId: 'staff_1_slot_123',
+        serviceId: 'service_haircut_styling',
+        serviceName: 'Haircut & Styling',
+        servicePricePkr: 2500,
+        staffId: 'staff_1',
+        staffName: 'Hamza Khan',
+        startAt: start,
+        endAt: end,
+        status: BookingStatus.upcoming,
+        createdAt: now,
+        notes: 'Low fade on sides please',
+      );
+
+      expect(booking.formattedPrice, 'PKR 2,500');
+      expect(booking.notes, 'Low fade on sides please');
+      expect(booking.status, BookingStatus.upcoming);
+
+      final json = booking.toJson();
+      expect(json['bookingId'], 'BK-TEST01');
+      expect(json['servicePricePkr'], 2500);
+      expect(json['notes'], 'Low fade on sides please');
+    });
+
+    test('BookingConflictException and PastSlotException have descriptive messages', () {
+      final conflict = BookingConflictException();
+      expect(conflict.message.contains('booked by another client'), isTrue);
+
+      final past = PastSlotException();
+      expect(past.message.contains('already passed'), isTrue);
     });
   });
 }
