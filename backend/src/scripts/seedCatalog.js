@@ -8,6 +8,7 @@ const SERVICES = [
     description: 'Precision scissor cut, hair wash, scalp massage, and custom blow-dry styling.',
     durationMinutes: 30,
     pricePkr: 2500,
+    imageUrl: 'https://images.unsplash.com/photo-1503951914875-452162b0f3f1?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'service_beard_grooming',
@@ -15,6 +16,7 @@ const SERVICES = [
     description: 'Hot towel prep, straight razor detailing, beard oil treatment, and shaping.',
     durationMinutes: 30,
     pricePkr: 1500,
+    imageUrl: 'https://images.unsplash.com/photo-1621605815971-fbc98d665033?auto=format&fit=crop&w=800&q=80',
   },
   {
     id: 'service_facial_refresh',
@@ -22,6 +24,7 @@ const SERVICES = [
     description: 'Deep pore cleansing, botanical exfoliation, mask treatment, and hydration.',
     durationMinutes: 30,
     pricePkr: 3500,
+    imageUrl: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=800&q=80',
   }
 ];
 

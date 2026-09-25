@@ -31,6 +31,18 @@ class AvailabilityProvider extends ChangeNotifier {
     _initCatalogStreams();
   }
 
+  void refreshCatalog() {
+    _servicesSub?.cancel();
+    _staffSub?.cancel();
+    _slotsSub?.cancel();
+    _isLoadingServices = true;
+    _isLoadingStaff = true;
+    _isLoadingSlots = true;
+    _errorMessage = null;
+    notifyListeners();
+    _initCatalogStreams();
+  }
+
   // Getters
   List<ServiceModel> get services => _services;
   List<StaffModel> get staffList => _staffList;

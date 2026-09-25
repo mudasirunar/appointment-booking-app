@@ -1,30 +1,63 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:appointment_booking_app/main.dart';
+import 'package:appointment_booking_app/core/utils/timezone_util.dart';
+import 'package:appointment_booking_app/models/service_model.dart';
+import 'package:appointment_booking_app/models/slot_model.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const AppointmentBookingApp());
+  group('Timezone & Domain Tests (Asia/Karachi PKT UTC+5)', () {
+    test('14 calendar days generation returns exactly 14 dates', () {
+      final days = TimezoneUtil.get14CalendarDays();
+      expect(days.length, 14);
+      expect(days.first.isBefore(days.last), isTrue);
+    });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    test('Sunday detection works accurately', () {
+      // Find any Sunday in the 14-day window
+      final days = TimezoneUtil.get14CalendarDays();
+      final sundays = days.where((d) => TimezoneUtil.isSunday(d)).toList();
+      expect(sundays.isNotEmpty, isTrue);
+      for (final sunday in sundays) {
+        expect(sunday.weekday, DateTime.sunday);
+        expect(TimezoneUtil.isSunday(sunday), isTrue);
+      }
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    test('ServiceModel serialization and formatting', () {
+      final service = ServiceModel(
+        id: 'service_haircut_styling',
+        name: 'Haircut & Styling',
+        description: 'Precision scissor cut',
+        durationMinutes: 30,
+        pricePkr: 2500,
+        imageUrl: 'https://example.com/haircut.jpg',
+      );
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+      expect(service.formattedPrice, 'PKR 2,500');
+      expect(service.displayImageUrl, 'https://example.com/haircut.jpg');
+
+      final json = service.toJson();
+      final fromJson = ServiceModel.fromJson(json);
+      expect(fromJson.id, service.id);
+      expect(fromJson.name, service.name);
+      expect(fromJson.pricePkr, 2500);
+      expect(fromJson.durationMinutes, 30);
+    });
+
+    test('SlotModel formatting and past status', () {
+      final futureStart = DateTime.now().toUtc().add(const Duration(days: 2));
+      final futureEnd = futureStart.add(const Duration(minutes: 30));
+
+      final slot = SlotModel(
+        id: 'staff_1_2026-09-27T10:00:00Z',
+        staffId: 'staff_1',
+        staffName: 'Hamza Khan',
+        startAt: futureStart,
+        endAt: futureEnd,
+        isReserved: false,
+      );
+
+      expect(slot.isPast, isFalse);
+      expect(slot.formattedTime.contains(TimezoneUtil.timezoneLabel), isTrue);
+    });
   });
 }

@@ -67,6 +67,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 ),
         ),
         body: SafeArea(
+          bottom: false,
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: _isSuccess ? _buildSuccessView() : _buildFormView(authProvider),

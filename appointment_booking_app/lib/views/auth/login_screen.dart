@@ -59,6 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
       value: AppTheme.systemOverlayStyleOf(context),
       child: Scaffold(
         body: SafeArea(
+          bottom: false,
           child: Center(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),

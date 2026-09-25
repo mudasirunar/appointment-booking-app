@@ -46,6 +46,12 @@ class TimezoneUtil {
     return '$timeStr ($timezoneLabel)';
   }
 
+  /// Format: "10:30 AM"
+  static String formatTimeOnly(DateTime utcDateTime) {
+    final pkt = toPkt(utcDateTime);
+    return DateFormat('h:mm a').format(pkt);
+  }
+
   /// Format: "Sat, Sep 26, 2026"
   static String formatDate(DateTime utcDateTime) {
     final pkt = toPkt(utcDateTime);

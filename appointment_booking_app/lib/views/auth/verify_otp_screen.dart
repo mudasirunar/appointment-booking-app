@@ -79,6 +79,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
           ),
         ),
         body: SafeArea(
+          bottom: false,
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
             child: Form(
