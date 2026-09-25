@@ -17,6 +17,8 @@
 
 # Firebase & Cloud Credentials
 *serviceAccount*.json
+*firebase-adminsdk*.json
+*appointment-booking-app*.json
 serviceAccountKey.json
 google-services.json
 **/google-services.json

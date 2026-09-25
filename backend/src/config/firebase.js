@@ -7,6 +7,20 @@ function initializeFirebase() {
     return admin;
   }
 
+  // 1. Direct JSON string in environment variable (Ideal for Vercel)
+  if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+    try {
+      const parsed = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+      admin.initializeApp({
+        credential: admin.credential.cert(parsed)
+      });
+      console.log('[Firebase Admin] Initialized with FIREBASE_SERVICE_ACCOUNT_JSON env variable.');
+      return admin;
+    } catch (e) {
+      console.error('[Firebase Admin] Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON:', e.message);
+    }
+  }
+
   const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH 
     ? path.resolve(process.env.FIREBASE_SERVICE_ACCOUNT_PATH)
     : path.resolve(__dirname, '../../serviceAccountKey.json');
