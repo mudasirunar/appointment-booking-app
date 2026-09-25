@@ -1,0 +1,29 @@
+{
+  "name": "appointment-booking-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Salon Appointment Booking App with Brevo OTP and Firebase Admin",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node src/scripts/seedCatalog.js"
+  },
+  "keywords": [
+    "flutter",
+    "firebase",
+    "brevo",
+    "appointment-booking"
+  ],
+  "author": "Mudasir",
+  "license": "ISC",
+  "dependencies": {
+    "@getbrevo/brevo": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "firebase-admin": "^12.6.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

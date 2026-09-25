@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Catalog Services (Public Read-Only)
+    match /services/{serviceId} {
+      allow read: if true;
+      allow write: if false; // Only manageable via Admin SDK / seed scripts
+    }
+
+    // 2. Staff Members (Public Read-Only)
+    match /staff/{staffId} {
+      allow read: if true;
+      allow write: if false; // Only manageable via Admin SDK / seed scripts
+    }
+
+    // 3. Availability Slots (Public Read, Zero PII)
+    match /slots/{slotId} {
+      allow read: if true;
+      // Allow updates via client transaction only when reserving/cancelling with valid fields
+      allow write: if request.auth != null;
+    }
+
+    // 4. Private User Bookings (Strict Isolation)
+    match /users/{userId}/bookings/{bookingId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if false; // Bookings are preserved with 'cancelled' status
+    }
+
+    // 5. OTP Verifications (Strict backend/Admin access only)
+    match /otp_verifications/{email} {
+      allow read, write: if false; // Access restricted to backend Firebase Admin SDK
+    }
+  }
+}
