@@ -2,36 +2,115 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 1. Catalog Services (Public Read-Only)
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // -------------------------------------------------------------------------
+    // 1. Services Catalog (Read-only for all users, client edits denied)
+    // -------------------------------------------------------------------------
     match /services/{serviceId} {
       allow read: if true;
-      allow write: if false; // Only manageable via Admin SDK / seed scripts
+      allow write: if false;
     }
 
-    // 2. Staff Members (Public Read-Only)
+    // -------------------------------------------------------------------------
+    // 2. Staff Members (Read-only for all users, client edits denied)
+    // -------------------------------------------------------------------------
     match /staff/{staffId} {
       allow read: if true;
-      allow write: if false; // Only manageable via Admin SDK / seed scripts
+      allow write: if false;
     }
 
-    // 3. Availability Slots (Public Read, Zero PII)
+    // -------------------------------------------------------------------------
+    // 3. Availability Slots (Public read, Zero PII, Atomic transitions)
+    // -------------------------------------------------------------------------
     match /slots/{slotId} {
       allow read: if true;
-      // Allow updates via client transaction only when reserving/cancelling with valid fields
-      allow write: if request.auth != null;
+      
+      // Slots can only be created or deleted by Admin SDK / Seed scripts
+      allow create, delete: if false;
+
+      // Allow slot reservation or cancellation transitions
+      allow update: if isAuthenticated()
+        // Ensure no customer PII (names, emails, phone numbers) is ever written to slots
+        && !('customerName' in request.resource.data)
+        && !('email' in request.resource.data)
+        && !('phoneNumber' in request.resource.data)
+        // Ensure the slot time itself is immutable
+        && request.resource.data.startAt == resource.data.startAt
+        && request.resource.data.endAt == resource.data.endAt
+        && request.resource.data.staffId == resource.data.staffId
+        // CASE A: Reserving an available slot
+        && (
+          (
+            resource.data.isReserved == false
+            && request.resource.data.isReserved == true
+            && resource.data.startAt > request.time // Must be a future slot
+            && request.resource.data.bookingRef != null
+          )
+          // CASE B: Releasing a slot via cancellation (before appointment starts)
+          || (
+            resource.data.isReserved == true
+            && request.resource.data.isReserved == false
+            && resource.data.startAt > request.time // Cannot release past appointments
+            && request.resource.data.bookingRef == null
+          )
+        );
     }
 
-    // 4. Private User Bookings (Strict Isolation)
+    // -------------------------------------------------------------------------
+    // 4. User Profiles
+    // -------------------------------------------------------------------------
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // -------------------------------------------------------------------------
+    // 5. Private User Bookings (Strict Isolation: Only owner can access)
+    // -------------------------------------------------------------------------
     match /users/{userId}/bookings/{bookingId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null && request.auth.uid == userId;
-      allow update: if request.auth != null && request.auth.uid == userId;
-      allow delete: if false; // Bookings are preserved with 'cancelled' status
+      // Users may read only their own bookings
+      allow read: if isOwner(userId);
+
+      // Create a new booking
+      allow create: if isOwner(userId)
+        && request.resource.data.status == 'upcoming'
+        && request.resource.data.startAt > request.time // Future slot only
+        && request.resource.data.bookingId == bookingId
+        && request.resource.data.slotId != null
+        && request.resource.data.serviceId != null
+        && request.resource.data.staffId != null;
+
+      // Update booking (e.g. cancellation)
+      allow update: if isOwner(userId)
+        // Can only transition from 'upcoming' to 'cancelled'
+        && resource.data.status == 'upcoming'
+        && request.resource.data.status == 'cancelled'
+        // Cancellation allowed only before appointment starts
+        && resource.data.startAt > request.time
+        // Audit fields
+        && request.resource.data.cancelledAt != null
+        // Core details cannot be tampered with
+        && request.resource.data.slotId == resource.data.slotId
+        && request.resource.data.startAt == resource.data.startAt
+        && request.resource.data.staffId == resource.data.staffId
+        && request.resource.data.serviceId == resource.data.serviceId;
+
+      // Bookings are immutable history; deletion is disabled
+      allow delete: if false;
     }
 
-    // 5. OTP Verifications (Strict backend/Admin access only)
+    // -------------------------------------------------------------------------
+    // 6. OTP Verifications (Strict Backend / Admin SDK access only)
+    // -------------------------------------------------------------------------
     match /otp_verifications/{email} {
-      allow read, write: if false; // Access restricted to backend Firebase Admin SDK
+      allow read, write: if false;
     }
   }
 }

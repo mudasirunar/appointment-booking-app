@@ -1,4 +1,124 @@
-# Miscellaneous / OS
+# ==============================================================================
+# Git Ignore Configuration
+# Salon Appointment Booking App (Flutter + Node.js Backend)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment & Secret Credentials (NEVER COMMIT SENSITIVE DATA)
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+!.env.example
+*.pem
+*.key
+*.cert
+*.crt
+
+# Firebase & Cloud Credentials
+*serviceAccount*.json
+serviceAccountKey.json
+google-services.json
+**/google-services.json
+GoogleService-Info.plist
+**/GoogleService-Info.plist
+**/ios/Runner/GoogleService-Info.plist
+**/android/app/google-services.json
+firebase_options.dart
+
+# Keystores & Release Signing
+*.jks
+*.keystore
+key.properties
+**/android/key.properties
+*.mobileprovision
+
+# ------------------------------------------------------------------------------
+# 2. Android & Kotlin Build Artifacts / Compiler Caches
+# ------------------------------------------------------------------------------
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.hprof
+.gradle/
+**/android/.gradle/
+**/android/local.properties
+**/android/**/build/
+**/android/app/build/
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/android/.cxx/
+**/android/captures/
+.kotlin/
+*.kotlin_module
+*.kotlin_builtins
+
+# ------------------------------------------------------------------------------
+# 3. iOS & Apple Build Artifacts
+# ------------------------------------------------------------------------------
+*.ipa
+*.dSYM/
+*.dSYM.zip
+**/ios/Pods/
+**/ios/.symlinks/
+**/ios/Podfile.lock
+**/ios/DerivedData/
+**/ios/build/
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/.last_build_id
+**/ios/Runner.xcworkspace/xcuserdata/
+**/ios/Runner.xcodeproj/xcuserdata/
+**/ios/Runner.xcodeproj/project.xcworkspace/xcuserdata/
+
+# ------------------------------------------------------------------------------
+# 4. Flutter / Dart Tooling & Generated Files
+# ------------------------------------------------------------------------------
+.dart_tool/
+**/.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+**/build/
+coverage/
+**/coverage/
+app.*.symbols
+app.*.map.json
+.widget_preview/
+
+# ------------------------------------------------------------------------------
+# 5. Node.js & Backend
+# ------------------------------------------------------------------------------
+node_modules/
+**/node_modules/
+backend/dist/
+backend/.env
+backend/.env.*
+
+# ------------------------------------------------------------------------------
+# 6. Logs, Crash Dumps & Compiler Logs
+# ------------------------------------------------------------------------------
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.crash
+*.stacktrace
+crashlytics-build.properties
+
+# ------------------------------------------------------------------------------
+# 7. IDE, OS & System Metadata
+# ------------------------------------------------------------------------------
 .DS_Store
 .DS_Store?
 ._*
@@ -7,60 +127,16 @@
 ehthumbs.db
 Thumbs.db
 
-# IDEs and Editors
 .idea/
+**/.idea/
+*.iml
+*.ipr
+*.iws
 .vscode/
+**/.vscode/
 *.sublime-project
 *.sublime-workspace
 *.swp
 *.swo
-
-# Environment Variables & Secrets (Keep secure)
-.env
-.env.*
-!.env.example
-serviceAccountKey.json
-*.pem
-*.key
-
-# Node.js / Backend
-backend/node_modules/
-backend/dist/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-backend/.env
-
-# Flutter / Dart
-appointment_booking_app/.dart_tool/
-appointment_booking_app/.flutter-plugins
-appointment_booking_app/.flutter-plugins-dependencies
-appointment_booking_app/.packages
-appointment_booking_app/build/
-appointment_booking_app/.pub-cache/
-appointment_booking_app/.pub/
-
-# Android Specific
-appointment_booking_app/android/.gradle/
-appointment_booking_app/android/local.properties
-appointment_booking_app/android/**/build/
-appointment_booking_app/android/app/build/
-appointment_booking_app/android/.idea/
-*.apk
-*.aab
-
-# iOS Specific
-appointment_booking_app/ios/.symlinks/
-appointment_booking_app/ios/Pods/
-appointment_booking_app/ios/Podfile.lock
-appointment_booking_app/ios/Flutter/Flutter.framework
-appointment_booking_app/ios/Flutter/Flutter.podspec
-appointment_booking_app/ios/Flutter/Generated.xcconfig
-appointment_booking_app/ios/Flutter/app.flx
-appointment_booking_app/ios/build/
-appointment_booking_app/ios/DerivedData/
-
-# Logs & Temporary Files
-*.log
-*.tmp
-*.bak
+*~
+.history/
