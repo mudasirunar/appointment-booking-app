@@ -9,12 +9,14 @@ import '../../providers/booking_provider.dart';
 class FloatingGlassNavBar extends StatefulWidget {
   final int currentIndex;
   final ValueChanged<int> onTabSelected;
+  final ValueChanged<int>? onTabReselected;
   final int? badgeCount;
 
   const FloatingGlassNavBar({
     super.key,
     required this.currentIndex,
     required this.onTabSelected,
+    this.onTabReselected,
     this.badgeCount,
   });
 
@@ -144,12 +146,16 @@ class _FloatingGlassNavBarState extends State<FloatingGlassNavBar>
     if (_isDragging) return;
     if (widget.currentIndex == index &&
         (_currentPillPosition - index).abs() < 0.05) {
+      HapticFeedback.selectionClick();
+      widget.onTabReselected?.call(index);
       return;
     }
     HapticFeedback.selectionClick();
     _animatePillTo(index.toDouble(), onComplete: () {
       if (widget.currentIndex != index) {
         widget.onTabSelected(index);
+      } else {
+        widget.onTabReselected?.call(index);
       }
     });
   }

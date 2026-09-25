@@ -14,7 +14,9 @@ import '../../providers/booking_provider.dart';
 import '../../providers/theme_provider.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  final ScrollController? scrollController;
+
+  const ProfileScreen({super.key, this.scrollController});
 
   void _showEditNameSheet(BuildContext context, AuthProvider auth) {
     final isDark = AppTheme.isDark(context);
@@ -175,6 +177,7 @@ class ProfileScreen extends StatelessWidget {
       value: AppTheme.systemOverlayStyleOf(context),
       child: Scaffold(
         body: SingleChildScrollView(
+          controller: scrollController,
           padding: EdgeInsets.fromLTRB(
             20,
             MediaQuery.paddingOf(context).top + 16,

@@ -19,14 +19,18 @@ class MyBookingsScreen extends StatefulWidget {
   const MyBookingsScreen({super.key, this.onExploreServices});
 
   @override
-  State<MyBookingsScreen> createState() => _MyBookingsScreenState();
+  State<MyBookingsScreen> createState() => MyBookingsScreenState();
 }
 
-class _MyBookingsScreenState extends State<MyBookingsScreen> {
+class MyBookingsScreenState extends State<MyBookingsScreen> {
   int _selectedTabIndex = 0; // 0: Upcoming, 1: Past, 2: Cancelled
 
   late final PageController _pageController;
   final ValueNotifier<bool> _isPageDraggingNotifier = ValueNotifier<bool>(false);
+
+  final ScrollController _upcomingScrollController = ScrollController();
+  final ScrollController _pastScrollController = ScrollController();
+  final ScrollController _cancelledScrollController = ScrollController();
 
   // Set of booking IDs that were just copied (for animated copy feedback)
   final Set<String> _copiedBookingIds = {};
@@ -39,9 +43,34 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
 
   @override
   void dispose() {
+    _upcomingScrollController.dispose();
+    _pastScrollController.dispose();
+    _cancelledScrollController.dispose();
     _pageController.dispose();
     _isPageDraggingNotifier.dispose();
     super.dispose();
+  }
+
+  void scrollToTop() {
+    ScrollController? controller;
+    switch (_selectedTabIndex) {
+      case 0:
+        controller = _upcomingScrollController;
+        break;
+      case 1:
+        controller = _pastScrollController;
+        break;
+      case 2:
+        controller = _cancelledScrollController;
+        break;
+    }
+    if (controller != null && controller.hasClients) {
+      controller.animateTo(
+        0.0,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+    }
   }
 
   void _handleCopy(String bookingId) {
@@ -283,7 +312,21 @@ class _MyBookingsScreenState extends State<MyBookingsScreen> {
     if (list.isEmpty) {
       return _buildEmptyState(context, isDark, tabIndex);
     }
+    final ScrollController controller;
+    switch (tabIndex) {
+      case 0:
+        controller = _upcomingScrollController;
+        break;
+      case 1:
+        controller = _pastScrollController;
+        break;
+      case 2:
+      default:
+        controller = _cancelledScrollController;
+        break;
+    }
     return ListView.separated(
+      controller: controller,
       padding: const EdgeInsets.fromLTRB(20, 10, 20, 110),
       physics: const BouncingScrollPhysics(),
       itemCount: list.length,

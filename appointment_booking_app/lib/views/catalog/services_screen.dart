@@ -14,8 +14,13 @@ import 'staff_availability_screen.dart';
 
 class ServicesScreen extends StatelessWidget {
   final VoidCallback? onNavigateToBookings;
+  final ScrollController? scrollController;
 
-  const ServicesScreen({super.key, this.onNavigateToBookings});
+  const ServicesScreen({
+    super.key,
+    this.onNavigateToBookings,
+    this.scrollController,
+  });
 
   String _getGreeting() {
     final nowPkt = TimezoneUtil.nowInPkt();
@@ -48,6 +53,7 @@ class ServicesScreen extends StatelessWidget {
             await Future.delayed(const Duration(milliseconds: 600));
           },
           child: CustomScrollView(
+            controller: scrollController,
             physics: const AlwaysScrollableScrollPhysics(
               parent: BouncingScrollPhysics(),
             ),

@@ -120,8 +120,9 @@ void main() {
       expect(themeProvider.themeMode, ThemeMode.light);
     });
 
-    testWidgets('FloatingGlassNavBar renders tabs and handles selection', (tester) async {
+    testWidgets('FloatingGlassNavBar renders tabs and handles selection and reselection', (tester) async {
       int selectedTab = 0;
+      int? reselectedTab;
 
       await tester.pumpWidget(
         MaterialApp(
@@ -131,6 +132,9 @@ void main() {
               badgeCount: 2,
               onTabSelected: (index) {
                 selectedTab = index;
+              },
+              onTabReselected: (index) {
+                reselectedTab = index;
               },
             ),
           ),
@@ -148,6 +152,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(selectedTab, 1);
+
+      // Re-tap already active tab to trigger scroll to top
+      await tester.tap(find.text('Services')); // Currently active in widget since currentIndex wasn't rebuilt
+      await tester.pumpAndSettle();
+      expect(reselectedTab, 0);
     });
 
     testWidgets('FloatingGlassNavBar handles fluid drag and switches tab only upon placement', (tester) async {

@@ -40,6 +40,11 @@ class MainNavigationShell extends StatefulWidget {
 class MainNavigationShellState extends State<MainNavigationShell> {
   late int _currentIndex;
 
+  final ScrollController _servicesScrollController = ScrollController();
+  final ScrollController _profileScrollController = ScrollController();
+  final GlobalKey<MyBookingsScreenState> _myBookingsKey =
+      GlobalKey<MyBookingsScreenState>();
+
   int get currentIndex => _currentIndex;
 
   @override
@@ -51,6 +56,8 @@ class MainNavigationShellState extends State<MainNavigationShell> {
 
   @override
   void dispose() {
+    _servicesScrollController.dispose();
+    _profileScrollController.dispose();
     if (MainNavigationShell.instance == this) {
       MainNavigationShell.instance = null;
     }
@@ -65,6 +72,32 @@ class MainNavigationShellState extends State<MainNavigationShell> {
     }
   }
 
+  void _onTabReselected(int index) {
+    switch (index) {
+      case 0:
+        if (_servicesScrollController.hasClients) {
+          _servicesScrollController.animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+          );
+        }
+        break;
+      case 1:
+        _myBookingsKey.currentState?.scrollToTop();
+        break;
+      case 2:
+        if (_profileScrollController.hasClients) {
+          _profileScrollController.animateTo(
+            0.0,
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+          );
+        }
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -75,12 +108,16 @@ class MainNavigationShellState extends State<MainNavigationShell> {
             index: _currentIndex,
             children: [
               ServicesScreen(
+                scrollController: _servicesScrollController,
                 onNavigateToBookings: () => setTab(1),
               ),
               MyBookingsScreen(
+                key: _myBookingsKey,
                 onExploreServices: () => setTab(0),
               ),
-              const ProfileScreen(),
+              ProfileScreen(
+                scrollController: _profileScrollController,
+              ),
             ],
           ),
 
@@ -88,6 +125,7 @@ class MainNavigationShellState extends State<MainNavigationShell> {
           FloatingGlassNavBar(
             currentIndex: _currentIndex,
             onTabSelected: setTab,
+            onTabReselected: _onTabReselected,
           ),
         ],
       ),
