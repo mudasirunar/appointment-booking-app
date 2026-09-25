@@ -71,17 +71,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     // App Icon / Logo
                     Center(
                       child: Container(
-                        width: 64,
-                        height: 64,
+                        width: 88,
+                        height: 88,
                         decoration: BoxDecoration(
                           color: isDark ? AppTheme.cardBackgroundDark : AppTheme.primary,
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(22),
                           border: isDark ? Border.all(color: AppTheme.borderSubtleDark) : null,
                         ),
                         child: const Icon(
                           Icons.content_cut_rounded,
                           color: AppTheme.primaryAccent,
-                          size: 32,
+                          size: 46,
                         ),
                       ),
                     ),
