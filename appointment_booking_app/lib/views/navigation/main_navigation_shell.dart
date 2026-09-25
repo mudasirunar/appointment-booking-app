@@ -101,6 +101,7 @@ class MainNavigationShellState extends State<MainNavigationShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           // IndexedStack preserves scroll offsets and state across all 3 tabs

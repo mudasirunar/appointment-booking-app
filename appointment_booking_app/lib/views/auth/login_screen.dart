@@ -36,6 +36,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Immediately dismiss soft keyboard so it doesn't linger into the home screen
+    FocusManager.instance.primaryFocus?.unfocus();
+
     final authProvider = context.read<AuthProvider>();
     final success = await authProvider.signIn(
       _emailController.text,

@@ -42,6 +42,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    FocusManager.instance.primaryFocus?.unfocus();
+
     final authProvider = context.read<AuthProvider>();
     final success = await authProvider.signUp(
       name: _nameController.text.trim(),
