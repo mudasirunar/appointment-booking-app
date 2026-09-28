@@ -7,15 +7,11 @@ import '../../core/utils/timezone_util.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/app_network_image.dart';
 import '../../core/widgets/app_snackbar.dart';
-import '../../core/widgets/app_dialog.dart';
 import '../../models/service_model.dart';
 import '../../models/staff_model.dart';
 import '../../models/slot_model.dart';
 import '../../providers/auth_provider.dart';
-import '../../providers/availability_provider.dart';
-import '../../providers/booking_provider.dart';
-import '../../services/booking_service.dart';
-import 'booking_success_screen.dart';
+import 'payment_checkout_screen.dart';
 
 class BookingReviewScreen extends StatefulWidget {
   final ServiceModel service;
@@ -42,86 +38,24 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
     super.dispose();
   }
 
-  Future<void> _handleConfirmBooking() async {
+  void _handleProceedToPayment() {
     final auth = context.read<AuthProvider>();
-    final bookingProvider = context.read<BookingProvider>();
-
     final user = auth.user;
     if (user == null) {
-      AppSnackBar.showError(context, 'Please log in to confirm your booking.');
+      AppSnackBar.showError(context, 'Please log in to continue.');
       return;
     }
 
-    try {
-      final booking = await bookingProvider.confirmBooking(
-        uid: user.uid,
-        slot: widget.slot,
-        service: widget.service,
-        staff: widget.staff,
-        notes: _notesController.text,
-      );
-
-      if (booking != null && mounted) {
-        // Clear slot selection so future appointment bookings start completely fresh
-        context.read<AvailabilityProvider>().clearSelection();
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => BookingSuccessScreen(
-              booking: booking,
-              staff: widget.staff,
-            ),
-          ),
-        );
-      }
-    } on BookingConflictException {
-      if (!mounted) return;
-      _showConflictDialog();
-    } on PastSlotException {
-      if (!mounted) return;
-      _showPastSlotDialog();
-    } catch (e) {
-      if (!mounted) return;
-      AppSnackBar.showError(
-        context,
-        'Connection interrupted. Please tap retry to secure your slot.',
-      );
-    }
-  }
-
-  void _showConflictDialog() {
-    AppDialog.show(
-      context: context,
-      barrierDismissible: false,
-      icon: Icons.event_busy_rounded,
-      isDestructive: true,
-      title: 'Slot No Longer Available',
-      description:
-          'Another client just confirmed this time slot at ${TimezoneUtil.formatTimeOnly(widget.slot.startAt)}. Please select another available slot.',
-      showCancel: false,
-      confirmText: 'Select Another Time',
-      onConfirm: () {
-        Navigator.pop(context); // Close dialog
-        Navigator.pop(context); // Return to slot grid
-      },
-    );
-  }
-
-  void _showPastSlotDialog() {
-    AppDialog.show(
-      context: context,
-      barrierDismissible: false,
-      icon: Icons.history_rounded,
-      title: 'Slot Has Passed',
-      description:
-          'This appointment time has already elapsed. Please pick an upcoming available slot.',
-      showCancel: false,
-      confirmText: 'Pick Another Time',
-      onConfirm: () {
-        Navigator.pop(context); // Close dialog
-        Navigator.pop(context); // Return to slot selection
-      },
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PaymentCheckoutScreen(
+          service: widget.service,
+          staff: widget.staff,
+          slot: widget.slot,
+          notes: _notesController.text.trim().isNotEmpty ? _notesController.text.trim() : null,
+        ),
+      ),
     );
   }
 
@@ -129,7 +63,6 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
   Widget build(BuildContext context) {
     final isDark = AppTheme.isDark(context);
     final auth = context.watch<AuthProvider>();
-    final bookingProvider = context.watch<BookingProvider>();
 
     final user = auth.user;
     final clientName = user?.displayName?.isNotEmpty == true
@@ -588,14 +521,12 @@ class _BookingReviewScreenState extends State<BookingReviewScreen> {
                       ],
                     ),
                     const SizedBox(width: 18),
-                    // Confirm Button
+                    // Proceed to Payment Button
                     Expanded(
                       child: CustomButton(
-                        text: 'Confirm Booking',
-                        isLoading: bookingProvider.isSubmitting,
-                        onPressed: bookingProvider.isSubmitting
-                            ? null
-                            : _handleConfirmBooking,
+                        text: 'Proceed to Payment',
+                        icon: Icons.arrow_forward_rounded,
+                        onPressed: _handleProceedToPayment,
                       ),
                     ),
                   ],

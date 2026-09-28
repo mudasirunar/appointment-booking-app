@@ -110,6 +110,11 @@ class BookingProvider extends ChangeNotifier {
     required ServiceModel service,
     required StaffModel staff,
     String? notes,
+    String paymentStatus = 'paid',
+    String paymentMethod = 'card',
+    String? transactionId,
+    int? amountPaid,
+    String? paymentDetails,
   }) async {
     if (_isSubmitting) return null; // Double-tap protection
     _isSubmitting = true;
@@ -126,6 +131,11 @@ class BookingProvider extends ChangeNotifier {
         service: service,
         staff: staff,
         notes: notes,
+        paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
+        transactionId: transactionId,
+        amountPaid: amountPaid,
+        paymentDetails: paymentDetails,
       );
 
       _isSubmitting = false;

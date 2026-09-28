@@ -17,6 +17,12 @@ class BookingModel {
   final DateTime createdAt;
   final DateTime? cancelledAt;
   final String? notes;
+  final String paymentStatus;
+  final String paymentMethod;
+  final String transactionId;
+  final int amountPaid;
+  final DateTime? paidAt;
+  final String? paymentDetails;
 
   const BookingModel({
     required this.bookingId,
@@ -32,6 +38,12 @@ class BookingModel {
     required this.createdAt,
     this.cancelledAt,
     this.notes,
+    this.paymentStatus = 'paid',
+    this.paymentMethod = 'card',
+    this.transactionId = '',
+    this.amountPaid = 0,
+    this.paidAt,
+    this.paymentDetails,
   });
 
   factory BookingModel.fromFirestore(DocumentSnapshot doc) {
@@ -63,12 +75,15 @@ class BookingModel {
       computedStatus = BookingStatus.upcoming;
     }
 
+    final price = (data['servicePricePkr'] as num?)?.toInt() ?? 0;
+    final fallbackTxn = 'TXN-${doc.id.length >= 8 ? doc.id.substring(0, 8).toUpperCase() : doc.id.toUpperCase()}';
+
     return BookingModel(
       bookingId: doc.id,
       slotId: data['slotId'] as String? ?? '',
       serviceId: data['serviceId'] as String? ?? '',
       serviceName: data['serviceName'] as String? ?? 'Service',
-      servicePricePkr: (data['servicePricePkr'] as num?)?.toInt() ?? 0,
+      servicePricePkr: price,
       staffId: data['staffId'] as String? ?? '',
       staffName: data['staffName'] as String? ?? 'Staff Member',
       startAt: startAt,
@@ -77,6 +92,12 @@ class BookingModel {
       createdAt: parseTimestamp(data['createdAt']),
       cancelledAt: parseNullableTimestamp(data['cancelledAt']),
       notes: data['notes'] as String?,
+      paymentStatus: data['paymentStatus'] as String? ?? 'paid',
+      paymentMethod: data['paymentMethod'] as String? ?? 'card',
+      transactionId: data['transactionId'] as String? ?? fallbackTxn,
+      amountPaid: (data['amountPaid'] as num?)?.toInt() ?? price,
+      paidAt: parseNullableTimestamp(data['paidAt']) ?? parseTimestamp(data['createdAt']),
+      paymentDetails: data['paymentDetails'] as String?,
     );
   }
 
@@ -95,6 +116,12 @@ class BookingModel {
       'createdAt': createdAt.toUtc(),
       'cancelledAt': cancelledAt?.toUtc(),
       'notes': notes,
+      'paymentStatus': paymentStatus,
+      'paymentMethod': paymentMethod,
+      'transactionId': transactionId,
+      'amountPaid': amountPaid,
+      'paidAt': paidAt?.toUtc(),
+      'paymentDetails': paymentDetails,
     };
   }
 

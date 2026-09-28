@@ -6,9 +6,11 @@ import '../../core/utils/timezone_util.dart';
 import '../../core/widgets/custom_button.dart';
 import '../../core/widgets/app_network_image.dart';
 import '../../core/widgets/app_snackbar.dart';
+import '../../core/widgets/payment_badge.dart';
 import '../../models/booking_model.dart';
 import '../../models/staff_model.dart';
 import '../auth/auth_gate.dart';
+import 'booking_receipt_screen.dart';
 
 class BookingSuccessScreen extends StatefulWidget {
   final BookingModel booking;
@@ -392,6 +394,90 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
                                 ],
                               ),
                             ],
+
+                            // Payment Details Section
+                            const Divider(height: 28),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'PAYMENT METHOD',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                          letterSpacing: 1.0,
+                                          color: AppTheme.textSecondaryOf(context),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 6),
+                                      PaymentBadge.fromMethod(
+                                        booking.paymentMethod,
+                                        size: 22,
+                                        showLabel: true,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4.5),
+                                  decoration: BoxDecoration(
+                                    color: booking.paymentStatus == 'paid'
+                                        ? const Color(0xFF16A34A).withValues(alpha: 0.15)
+                                        : const Color(0xFFD97706).withValues(alpha: 0.15),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: booking.paymentStatus == 'paid'
+                                          ? const Color(0xFF16A34A).withValues(alpha: 0.4)
+                                          : const Color(0xFFD97706).withValues(alpha: 0.4),
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        booking.paymentStatus == 'paid'
+                                            ? Icons.check_circle_rounded
+                                            : Icons.storefront_rounded,
+                                        size: 13,
+                                        color: booking.paymentStatus == 'paid'
+                                            ? const Color(0xFF16A34A)
+                                            : const Color(0xFFD97706),
+                                      ),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        booking.paymentStatus == 'paid' ? 'PAID' : 'AT VENUE',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: 0.5,
+                                          color: booking.paymentStatus == 'paid'
+                                              ? const Color(0xFF16A34A)
+                                              : const Color(0xFFD97706),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (booking.transactionId.isNotEmpty) ...[
+                              const SizedBox(height: 10),
+                              Text(
+                                'TXN: ${booking.transactionId}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontFamily: 'Courier',
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.textSecondaryOf(context),
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
@@ -421,11 +507,38 @@ class _BookingSuccessScreenState extends State<BookingSuccessScreen> {
                   children: [
                     CustomButton(
                       width: double.infinity,
-                      text: 'View in My Bookings',
-                      icon: Icons.calendar_month_rounded,
-                      onPressed: () => _navigateToTab(context, 1),
+                      text: 'View & Download Receipt',
+                      icon: Icons.receipt_long_rounded,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => BookingReceiptScreen(
+                              booking: booking,
+                              staff: staff,
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 13),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                          side: BorderSide(color: AppTheme.borderOf(context), width: 1.2),
+                        ),
+                        onPressed: () => _navigateToTab(context, 1),
+                        icon: const Icon(Icons.calendar_month_rounded, size: 18),
+                        label: const Text(
+                          'View in My Bookings',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
                     TextButton(
                       onPressed: () => _navigateToTab(context, 0),
                       child: Text(

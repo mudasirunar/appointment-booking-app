@@ -12,6 +12,7 @@ import '../../core/widgets/fluid_segmented_pill.dart';
 import '../../models/booking_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../providers/booking_provider.dart';
+import 'booking_receipt_screen.dart';
 
 class MyBookingsScreen extends StatefulWidget {
   final VoidCallback? onExploreServices;
@@ -492,38 +493,93 @@ class MyBookingsScreenState extends State<MyBookingsScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Status Pill
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: statusColor.withValues(alpha: 0.4)),
-                ),
+              Expanded(
                 child: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    // Status Pill
                     Container(
-                      width: 6,
-                      height: 6,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: statusColor,
-                        shape: BoxShape.circle,
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: statusColor.withValues(alpha: 0.4)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            statusLabel,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.5,
+                              color: statusColor,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      statusLabel,
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.6,
-                        color: statusColor,
+                    // Payment Status Pill
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3.5),
+                        decoration: BoxDecoration(
+                          color: booking.paymentStatus == 'paid'
+                              ? const Color(0xFF16A34A).withValues(alpha: 0.12)
+                              : const Color(0xFFD97706).withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: booking.paymentStatus == 'paid'
+                                ? const Color(0xFF16A34A).withValues(alpha: 0.35)
+                                : const Color(0xFFD97706).withValues(alpha: 0.35),
+                          ),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              booking.paymentStatus == 'paid'
+                                  ? Icons.check_circle_rounded
+                                  : Icons.storefront_rounded,
+                              size: 10,
+                              color: booking.paymentStatus == 'paid'
+                                  ? const Color(0xFF16A34A)
+                                  : const Color(0xFFD97706),
+                            ),
+                            const SizedBox(width: 3),
+                            Flexible(
+                              child: Text(
+                                booking.paymentStatus == 'paid' ? 'PAID' : 'VENUE',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.w800,
+                                  letterSpacing: 0.4,
+                                  color: booking.paymentStatus == 'paid'
+                                      ? const Color(0xFF16A34A)
+                                      : const Color(0xFFD97706),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
+              const SizedBox(width: 8),
 
               // Reference ID with animated copy
               InkWell(
@@ -703,12 +759,55 @@ class MyBookingsScreenState extends State<MyBookingsScreen> {
             ),
           ],
 
-          // Cancel Action (Upcoming Tab Only)
-          if (onCancel != null) ...[
-            const SizedBox(height: 14),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
+          // Card Action Buttons (Receipt & Cancel)
+          const SizedBox(height: 14),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // View Receipt Action Button
+              InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => BookingReceiptScreen(booking: booking),
+                    ),
+                  );
+                },
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryAccent.withValues(alpha: isDark ? 0.12 : 0.08),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: AppTheme.primaryAccent.withValues(alpha: 0.35),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.receipt_long_rounded,
+                        size: 14,
+                        color: AppTheme.primaryAccent,
+                      ),
+                      SizedBox(width: 5),
+                      Text(
+                        'Receipt',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.primaryAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Cancel Action (Upcoming Tab Only)
+              if (onCancel != null)
                 InkWell(
                   onTap: onCancel,
                   borderRadius: BorderRadius.circular(10),
@@ -742,9 +841,8 @@ class MyBookingsScreenState extends State<MyBookingsScreen> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ],
       ),
     );

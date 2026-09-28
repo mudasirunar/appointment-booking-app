@@ -74,9 +74,16 @@ class BookingService {
     required ServiceModel service,
     required StaffModel staff,
     String? notes,
+    String paymentStatus = 'paid',
+    String paymentMethod = 'card',
+    String? transactionId,
+    int? amountPaid,
+    String? paymentDetails,
   }) async {
     final slotRef = _firestore.collection('slots').doc(slot.id);
     final bookingRef = _firestore.collection('users').doc(uid).collection('bookings').doc(bookingId);
+    final resolvedTxnId = transactionId ?? 'TXN-${bookingId.length >= 8 ? bookingId.substring(0, 8).toUpperCase() : bookingId.toUpperCase()}';
+    final resolvedAmount = amountPaid ?? service.pricePkr;
 
     return await _firestore.runTransaction<BookingModel>((transaction) async {
       // 1. Idempotency Check: Did this booking already succeed on a previous retry?
@@ -134,6 +141,12 @@ class BookingService {
         'createdAt': FieldValue.serverTimestamp(),
         'cancelledAt': null,
         'notes': notes?.trim().isNotEmpty == true ? notes!.trim() : null,
+        'paymentStatus': paymentStatus,
+        'paymentMethod': paymentMethod,
+        'transactionId': resolvedTxnId,
+        'amountPaid': resolvedAmount,
+        'paidAt': paymentStatus == 'paid' ? FieldValue.serverTimestamp() : null,
+        'paymentDetails': paymentDetails,
       };
 
       transaction.set(bookingRef, newBookingData);
@@ -151,6 +164,12 @@ class BookingService {
         status: BookingStatus.upcoming,
         createdAt: DateTime.now(),
         notes: notes?.trim().isNotEmpty == true ? notes!.trim() : null,
+        paymentStatus: paymentStatus,
+        paymentMethod: paymentMethod,
+        transactionId: resolvedTxnId,
+        amountPaid: resolvedAmount,
+        paidAt: DateTime.now(),
+        paymentDetails: paymentDetails,
       );
     });
   }
